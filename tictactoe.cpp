@@ -7,8 +7,20 @@
 using namespace std;
 tictactoe::tictactoe() // constructor just clear the board and start a new game
 {
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	clearBoard();
+	mode = '\0';
+
+	outc = 114;
+	inc = 115;
+	aic = 124;
+	pl1c = 117;
+	pl2c = 121;
+	brdc = 111;
+
+	system("COLOR 70");
 	startGame();
+
 }
 
 void tictactoe::startGame() {
@@ -20,32 +32,45 @@ void tictactoe::startGame() {
 
 
 void tictactoe::mainMenu() {
-  playFirst = 'y';
+	SetConsoleTextAttribute(hConsole, outc);
 	printf("-----Welcome to the TicTacToe Game----\n\n");
 	printf("Multiplayer or SinglePlayer (M/S): ");
+	SetConsoleTextAttribute(hConsole, inc);
 	cin >> mode;
 	if (mode == 'm' || mode == 'M') {
+		SetConsoleTextAttribute(hConsole, outc);
 		printf("Enter name of 1st Player: ");
 		cin.clear(); cin.ignore(INT_MAX, '\n');
+		SetConsoleTextAttribute(hConsole, inc);
 		getline(cin, name1, '\n');
+		SetConsoleTextAttribute(hConsole, outc);
 		cout << "Enter " << name1 << "'s Symbol: ";
+		SetConsoleTextAttribute(hConsole, inc);
 		cin >> sym1;
+		SetConsoleTextAttribute(hConsole, outc);
 		printf("Enter name of 2nd Player: ");
+		SetConsoleTextAttribute(hConsole, inc);
 		cin.clear(); cin.ignore(INT_MAX, '\n');
 		getline(cin, name2, '\n');
+		SetConsoleTextAttribute(hConsole, outc);
 		cout << "Enter " << name2 << "'s Symbol: ";
+		SetConsoleTextAttribute(hConsole, inc);
 		cin >> sym2;
 	}
 	else if (mode == 's' || mode == 'S') {
+		SetConsoleTextAttribute(hConsole, outc);
 		printf("Enter your name: ");
+		SetConsoleTextAttribute(hConsole, inc);
 		cin.clear(); cin.ignore(INT_MAX, '\n');
 		getline(cin, name1, '\n');
+		SetConsoleTextAttribute(hConsole, outc);
 		cout << "Enter your Symbol: ";
+		SetConsoleTextAttribute(hConsole, inc);
 		cin >> sym1;
+		SetConsoleTextAttribute(hConsole, outc);
 		cout << "Enter A.I.'s Symbol: ";
+		SetConsoleTextAttribute(hConsole, inc);
 		cin >> sym2;
-   cout << "Want to play first? (y/n): ";
-   cin >>playFirst;
 	}
 }
 
@@ -55,12 +80,22 @@ void tictactoe::playGame() {
 	bool isDone = false;
 	int x, y;
 	turns = 0;
+	if (mode == 's' || mode == 'S') {
+		SetConsoleTextAttribute(hConsole, outc);
+		cout << "Want to play first? (y/n): ";
+		SetConsoleTextAttribute(hConsole, inc);
+		cin >> playFirst;
+	}
 	while (!isDone) {
-   if(playFirst=='n' || playFirst=='N'){
-        changeplayer(&isDone);
-        playFirst = 'y';
-            }
+		if (playFirst == 'n' || playFirst == 'N') {
+			changeplayer(&isDone);
+			playFirst = 'y';
+		}
 		displayBoard();
+		if (curerntPlayerSym == sym1)
+			SetConsoleTextAttribute(hConsole, pl1c);
+		else
+			SetConsoleTextAttribute(hConsole, pl2c);
 		cout << "\n\n" << curerntPlayerName << "'s Move:\n";
 
 		// input coordinates of player's move and varify them
@@ -68,6 +103,7 @@ void tictactoe::playGame() {
 		x = getXcord();
 		y = getYcord();
 		if (board[y][x] != ' ') {
+			SetConsoleTextAttribute(hConsole, outc);
 			cout << "That Spot is occupied!!..\n";
 			goto here;
 		}
@@ -76,14 +112,25 @@ void tictactoe::playGame() {
 		turns++;
 		if (checkForVictory()) {
 			displayBoard();
-			cout << "\nThe Game is Over!!!...\n\n" << curerntPlayerName << " has won!.\n\nWant to play more.(y/n): ";
+			SetConsoleTextAttribute(hConsole, outc);
+			cout << "\nThe Game is Over!!!...\n\n...Winner...\n\n";
+			if(curerntPlayerSym == sym1)
+				SetConsoleTextAttribute(hConsole, pl1c);
+			else
+				SetConsoleTextAttribute(hConsole, pl2c);
+			cout << "...!!!!---" << curerntPlayerName << "---!!!!...";
+			SetConsoleTextAttribute(hConsole, outc);
+			cout << "\n\nWant to play more.(y/n): ";
+			SetConsoleTextAttribute(hConsole, inc);
 			cin >> choice;
 			isDone = true;
 		}
 		// if no one wins and 9 turns are passed , then it's a tie
 		else if (turns == 9) {
 			displayBoard();
-			cout << "\nThe Game is Over!!!...\n\n" << "It's a Tie.\n\nWant to play more.(y/n): ";
+			SetConsoleTextAttribute(hConsole, outc);
+			cout << "\nThe Game is Over!!!...\n\n...!!!!---It's a TIE---!!!!...\n\nWant to play more.(y/n): ";
+			SetConsoleTextAttribute(hConsole, inc);
 			cin >> choice;
 			isDone = true;
 		}
@@ -107,19 +154,41 @@ void tictactoe::clearBoard() {
 }
 
 void tictactoe::displayBoard() {
+	int diff = (brdc / 16 - outc / 16)*16;
+
 	printf("\n\n");
 	for (int y = 0; y < 3; y++) {
-		cout << "\t ";
+		SetConsoleTextAttribute(hConsole, inc);
+		cout << "\t";
+		SetConsoleTextAttribute(hConsole, brdc);
 		for (int x = 0; x < 3; x++) {
-			cout << " " << board[y][x] << " ";
+			cout << " ";
+			if(board[y][x] == sym1)
+				SetConsoleTextAttribute(hConsole, pl1c + diff);
+			else if (board[y][x] == sym2) {
+				if(mode == 'm' || mode == 'M')
+					SetConsoleTextAttribute(hConsole, pl2c + diff);
+				else
+					SetConsoleTextAttribute(hConsole, aic + diff);
+			}
+			else
+				SetConsoleTextAttribute(hConsole, brdc);
+			cout << board[y][x];
+			SetConsoleTextAttribute(hConsole, brdc);
+			cout << " ";
 			if (x != 2)
 				cout << "|";
-			else
-				cout << " ";
 		}
-		if (y != 2)
-			printf("\n\t ---|---|---\n");
+		if (y != 2) {
+			SetConsoleTextAttribute(hConsole, inc);
+			printf("\n\t");
+			SetConsoleTextAttribute(hConsole, brdc);
+			printf("---|---|---");
+			SetConsoleTextAttribute(hConsole, inc);
+			printf("\n");
+		}
 	}
+	SetConsoleTextAttribute(hConsole, inc);
 	printf("\n");
 }
 
@@ -137,20 +206,27 @@ void tictactoe::changeplayer(bool* isDone) {
 	}
 	//In singleplayer mode it playes A.I.'s turn
 	else {
-   displayBoard();
-   cout<<"\n Thinking......\n";
+		displayBoard();
+		SetConsoleTextAttribute(hConsole, aic);
+		cout << "\n Thinking......\n";
 		turns++;
 		performMove(sym2, board);
 		if (checkForVictory()) {
 			displayBoard();
-			cout << "\nThe Game is Over!!!...\n\nA.I. has won!.\n\nWant to play more.(y/n): ";
-			cin >> choice;
+			SetConsoleTextAttribute(hConsole, outc);
+			cout << "\nGame is Over!!!...\n\n";
+			SetConsoleTextAttribute(hConsole, aic);
+			cout << "...!!!!---I WON---!!!!...";
+			SetConsoleTextAttribute(hConsole, outc);
+			cout << "\n\nWant to play more.(y / n) : ";
+			SetConsoleTextAttribute(hConsole, inc);cin >> choice;
 			*isDone = true;//to exit from the game loop in playGame()
 		}
-  else if (turns == 9) {
+		else if (turns == 9) {
 			displayBoard();
-			cout << "\nThe Game is Over!!!...\n\n" << "It's a Tie.\n\nWant to play more.(y/n): ";
-			cin >> choice;
+			SetConsoleTextAttribute(hConsole, outc);
+			cout << "\nThe Game is Over!!!...\n\n...!!!!---It's a TIE---!!!!...\n\nWant to play more.(y/n): ";
+			SetConsoleTextAttribute(hConsole, inc);cin >> choice;
 			*isDone = true;
 		}
 	}
@@ -166,9 +242,12 @@ void tictactoe::performMove(char sym, char board[][3]) {
 
 int tictactoe::getXcord() {
 	int x;
+	SetConsoleTextAttribute(hConsole, outc);
 	cout << "Enter X co-ordinate: ";
+	SetConsoleTextAttribute(hConsole, inc);
 	cin >> x;
 	if (x < 1 || x>3) {
+		SetConsoleTextAttribute(hConsole, outc);
 		cout << "Invalid Co-ordinate!!\n";
 		x = getXcord() + 1;
 	}
@@ -178,9 +257,12 @@ int tictactoe::getXcord() {
 
 int tictactoe::getYcord() {
 	int y;
+	SetConsoleTextAttribute(hConsole, outc);
 	cout << "Enter Y co-ordinate: ";
+	SetConsoleTextAttribute(hConsole, inc);
 	cin >> y;
 	if (y < 1 || y>3) {
+		SetConsoleTextAttribute(hConsole, outc);
 		cout << "Invalid Co-ordinate!!\n";
 		y = getYcord() + 1;
 	}

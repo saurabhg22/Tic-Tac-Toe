@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <windows.h>  
 using std::string;
 class tictactoe
 {
@@ -16,10 +17,12 @@ private:
 		int y;
 		int score;
 	};
+	HANDLE  hConsole;
+	int outc, inc, aic, pl1c, pl2c, brdc;
 	int turns; // store no. of turns for both A.I and Players
 	char  board[3][3];
 	char sym1, sym2, curerntPlayerSym, choice;//symbol of player1 and player2
-	char  mode = '\0',playFirst;
+	char  mode, playFirst;
 	string name1, name2, curerntPlayerName;
 	void playGame(); // main game loop
 	void clearBoard();
