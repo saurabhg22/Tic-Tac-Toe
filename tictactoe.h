@@ -19,7 +19,7 @@ private:
 	int turns; // store no. of turns for both A.I and Players
 	char  board[3][3];
 	char sym1, sym2, curerntPlayerSym, choice;//symbol of player1 and player2
-	char  mode = '\0';
+	char  mode = '\0',playFirst;
 	string name1, name2, curerntPlayerName;
 	void playGame(); // main game loop
 	void clearBoard();

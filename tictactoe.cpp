@@ -3,6 +3,7 @@
 #include <string>
 #include <conio.h>
 #include <vector>
+#include <stdlib.h>
 using namespace std;
 tictactoe::tictactoe() // constructor just clear the board and start a new game
 {
@@ -19,6 +20,7 @@ void tictactoe::startGame() {
 
 
 void tictactoe::mainMenu() {
+  playFirst = 'y';
 	printf("-----Welcome to the TicTacToe Game----\n\n");
 	printf("Multiplayer or SinglePlayer (M/S): ");
 	cin >> mode;
@@ -42,6 +44,8 @@ void tictactoe::mainMenu() {
 		cin >> sym1;
 		cout << "Enter A.I.'s Symbol: ";
 		cin >> sym2;
+   cout << "Want to play first? (y/n): ";
+   cin >>playFirst;
 	}
 }
 
@@ -52,6 +56,10 @@ void tictactoe::playGame() {
 	int x, y;
 	turns = 0;
 	while (!isDone) {
+   if(playFirst=='n' || playFirst=='N'){
+        changeplayer(&isDone);
+        playFirst = 'y';
+            }
 		displayBoard();
 		cout << "\n\n" << curerntPlayerName << "'s Move:\n";
 
@@ -129,6 +137,8 @@ void tictactoe::changeplayer(bool* isDone) {
 	}
 	//In singleplayer mode it playes A.I.'s turn
 	else {
+   displayBoard();
+   cout<<"\n Thinking......\n";
 		turns++;
 		performMove(sym2, board);
 		if (checkForVictory()) {
@@ -136,6 +146,12 @@ void tictactoe::changeplayer(bool* isDone) {
 			cout << "\nThe Game is Over!!!...\n\nA.I. has won!.\n\nWant to play more.(y/n): ";
 			cin >> choice;
 			*isDone = true;//to exit from the game loop in playGame()
+		}
+  else if (turns == 9) {
+			displayBoard();
+			cout << "\nThe Game is Over!!!...\n\n" << "It's a Tie.\n\nWant to play more.(y/n): ";
+			cin >> choice;
+			*isDone = true;
 		}
 	}
 }
@@ -206,7 +222,7 @@ tictactoe::move tictactoe::getBestMove(char sym, char board[][3]) {
 			return move(-10);
 		}
 	}
-	if (turns == 9)
+	if (turns == 10)
 		return move(0);
 
 	std::vector<move> moves; // stores all possible moves
@@ -254,3 +270,4 @@ tictactoe::move tictactoe::getBestMove(char sym, char board[][3]) {
 	}
 	return moves[bestMove];
 }
+
