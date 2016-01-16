@@ -18,7 +18,7 @@ private:
 		int score;
 	};
 	HANDLE  hConsole;
-	int outc, inc, aic, pl1c, pl2c, brdc;
+	int outc, inc, aic, pl1c, pl2c, brdc; //Colors
 	int turns; // store no. of turns for both A.I and Players
 	char  board[3][3];
 	char sym1, sym2, curerntPlayerSym, choice;//symbol of player1 and player2
